@@ -1,0 +1,176 @@
+---
+title: "EDA"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+#Importación de datos
+datos <- read.csv(file = "Datos/DatosAbiertosAutobuses.csv", header = TRUE, sep = ",", encoding = "UTF-8")
+
+View(datos)
+
+```
+
+
+
+```{r}
+#Análisis exploratorio
+head(datos)
+
+```
+
+
+```{r}
+
+glimpse(datos)
+
+```
+
+```{r}
+class(datos)
+
+class(datos$Nombre.Operador)
+
+class(datos$Mes)
+
+class(datos$pasajeroEquivalente)
+
+class(datos$Carreras)
+```
+
+
+```{r}
+str(datos)
+
+```
+```{r}
+summary(datos)
+
+```
+
+```{r}
+colnames(datos)
+
+```
+
+```{r}
+names(datos)
+
+```
+```{r}
+is.na(datos)
+
+```
+
+```{r}
+which(is.na(datos))
+
+```
+```{r}
+sum(is.na(datos$Pasajeros.Adulto.Mayor))
+sum(is.na(datos$Pasajeros.Regulares))
+sum(is.na(datos$Carreras))
+sum(is.na(datos$Ingresos))
+
+```
+```{r}
+#nos muestra un panorama más completo de las variables. En el caso de las numéricas nos muestra los estadísticos descriptivos, la cantidad de observaciones, los valores perdidos.
+describe(datos)
+```
+
+```{r}
+#Converción de datos
+datos$Nombre.Operador <- as.factor(datos$Nombre.Operador)
+class(datos$Nombre.Operador)
+
+datos$Cédula <- as.factor(datos$Cédula)
+class(datos$Cédula)
+
+datos$Código.Ruta <- as.factor(datos$Código.Ruta)
+class(datos$Código.Ruta)
+
+datos$Descripción.Ruta <- as.factor(datos$Descripción.Ruta)
+class(datos$Descripción.Ruta)
+
+datos$Código.Ramal <- as.factor(datos$Código.Ramal)
+class(datos$Código.Ramal)
+
+datos$Descripción.Ramal <- as.factor(datos$Descripción.Ramal)
+class(datos$Descripción.Ramal)
+
+
+```
+
+
+```{r}
+
+#Observables de los valores atípicos
+
+boxplot(Pasajeros.Adulto.Mayor ~ Mes, col = rainbow(ncol(datos)), data = datos)
+
+boxplot(Pasajeros.Regulares ~ Mes, col = rainbow(ncol(datos)), data = datos)
+
+boxplot(Ingresos ~ Mes, col = rainbow(ncol(datos)), data = datos)
+
+boxplot(Carreras ~ Mes, col = rainbow(ncol(datos)), data = datos)
+
+
+```
+
+```{r}
+#Histogramas
+
+ggplot(datos, aes(x = Ingresos)) + 
+  geom_histogram(bins = 30, fill = "blue") + scale_x_continuous(labels = scales::comma) + labs(x="Ingresos", y="Frecuencia") + scale_fill_brewer(palette = "Blues")
+
+ggplot(datos, aes(x = Carreras)) + 
+  geom_histogram(bins = 30, fill = "blue") + scale_x_continuous(labels = scales::comma) + labs(x="Carreras", y="Frecuencia") + scale_fill_brewer(palette = "Blues")
+
+ggplot(datos, aes(x = Pasajeros.Adulto.Mayor)) + 
+  geom_histogram(bins = 30, fill = "blue") + scale_x_continuous(labels = scales::comma) + labs(x="Adulto Mayor", y="Frecuencia") + scale_fill_brewer(palette = "Blues")
+
+ggplot(datos, aes(x = Pasajeros.Regulares)) + 
+  geom_histogram(bins = 30, fill = "blue") + scale_x_continuous(labels = scales::comma) + labs(x="Regulares", y="Frecuencia") + scale_fill_brewer(palette = "Blues")
+
+
+```
+
+
+```{r}
+#Correlación de datos en Pasajeros Adulto Mayor, Pasajeros Regulares, Mes, Año
+
+datosNum <- datos %>%  select("Pasajeros.Adulto.Mayor", "Pasajeros.Regulares", "Carreras", "Ingresos")
+
+#View(datosNum)
+datosNum2 <- na.omit(datosNum)
+
+n <- cor(datosNum2)
+
+corrplot(n, method = "circle")
+
+corrplot(n, method = "number", tl.col = "blue", main = "Correlación")
+
+
+# Creamos el gráfico
+  plot(datosNum2$Pasajeros.Adulto.Mayor, datosNum2$Pasajeros.Regulares, pch = 19, col = "lightblue", main = "Correlación entre Pasajeros Regulares y Adulto Mayor", xlab="Tarifa Máxima", ylab = "Tarifa Mínima")
+
+# Línea de regresión
+abline(lm(datosNum2$Pasajeros.Regulares ~ datosNum2$Pasajeros.Adulto.Mayor), col = "red", 
+       lwd = 3)
+
+# Correlación de Pearson
+text(paste("Correlación:", round(cor(datosNum2$Pasajeros.Adulto.Mayor, datosNum2$Pasajeros.Regulares), 2)), x = 25, y = 95)
+
+```
+
+```{r}
+# install.packages("PerformanceAnalytics")
+#funciones de densidad, líneas de regresión suavizadas y coeficientes de correlación con los niveles de significación (si no hay estrellas, la variable no es estadísticamente significativa, mientras que una, dos y tres estrellas significan que la correspondiente variable es estadísticamente significativa para los niveles 10%, 5% y 1%, respectivamente)
+
+chart.Correlation(datosNum2, histogram = TRUE, method = "pearson")
+
+```

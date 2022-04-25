@@ -1,0 +1,178 @@
+---
+title: "EDA"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+#Importación de datos
+datos <- read.csv(file = "Datos/DatosAbiertosCSV.csv", header = TRUE, sep = ",", encoding = "UTF-8")
+
+View(datos)
+
+```
+
+
+
+```{r}
+#Análisis exploratorio
+head(datos)
+
+```
+
+
+```{r}
+
+glimpse(datos)
+
+```
+
+```{r}
+class(datos)
+
+class(datos$Empresa)
+
+class(datos$Unidad)
+
+class(datos$Año)
+
+class(datos$Fecha.Publicación)
+```
+
+
+```{r}
+str(datos)
+
+```
+```{r}
+summary(datos)
+
+```
+
+```{r}
+colnames(datos)
+
+```
+
+```{r}
+names(datos)
+
+```
+```{r}
+is.na(datos)
+
+```
+
+```{r}
+which(is.na(datos))
+
+```
+```{r}
+sum(is.na(datos))
+
+```
+```{r}
+#nos muestra un panorama más completo de las variables. En el caso de las numéricas nos muestra los estadísticos descriptivos, la cantidad de observaciones, los valores perdidos.
+describe(datos)
+```
+
+```{r}
+#Converción de datos
+datos$Empresa <- as.factor(datos$Empresa)
+class(datos$Empresa)
+
+datos$Servicio <- as.factor(datos$Servicio)
+class(datos$Servicio)
+
+datos$Unidad <- as.factor(datos$Unidad)
+class(datos$Unidad)
+
+datos$Resolución <- as.factor(datos$Resolución)
+class(datos$Resolución)
+
+datos$Expediente <- as.factor(datos$Expediente)
+class(datos$Expediente)
+
+datos$Fecha.Publicación <- as.Date(datos$Fecha.Publicación)
+class(datos$Fecha.Publicación)
+
+
+```
+
+
+```{r}
+
+#Observables de los valores atípicos
+
+boxplot(Tarifa.Máxima ~ Servicio, col = rainbow(ncol(datos)), data = datos)
+
+boxplot(Tarifa.Mínima ~ Servicio, col = rainbow(ncol(datos)), data = datos)
+
+boxplot(Tarifa.Máxima ~ Unidad, col = rainbow(ncol(datos)), data = datos)
+
+boxplot(Tarifa.Mínima ~ Unidad, col = rainbow(ncol(datos)), data = datos)
+
+
+```
+
+```{r}
+#Histogramas
+
+hist(datos$Tarifa.Máxima, main = "Concentración de datos Tarifa Máxima", ylab="Frecuencia", xlab = "Tarifa Máxima", col = "lightblue")
+
+hist(datos$Tarifa.Mínima, main = "Concentración de datos Tarifa Mínima", ylab="Frecuencia", xlab = "Tarifa Mínima", col = rgb(1, 0, 0, alpha = 0.5))
+
+```
+
+
+```{r}
+#Correlación de datos en tarifa máxima, mínia y el año
+
+datosNum <- datos %>%  select("Tarifa.Máxima", "Tarifa.Mínima", "Año")
+
+#View(datosNum)
+
+corrplot.mixed(cor(datosNum), lower = "number", upper = "circle", tl.col = "blue", main = "Correlación entre tarifa máxima y tarifa mínima")
+
+
+# Creamos el gráfico
+plot(datos$Tarifa.Máxima, datos$Tarifa.Mínima, pch = 19, col = "lightblue", main = "Correlación entre tarifa máxima y tarifa mínima", xlab="Tarifa Máxima", ylab = "Tarifa Mínima")
+
+# Línea de regresión
+abline(lm(datos$Tarifa.Mínima ~ datos$Tarifa.Máxima), col = "red", lwd = 3)
+
+# Correlación de Pearson
+text(paste("Correlación:", round(cor(datos$Tarifa.Máxima, datos$Tarifa.Mínima), 2)), x = 25, y = 95)
+
+```
+
+```{r}
+# install.packages("PerformanceAnalytics")
+#funciones de densidad, líneas de regresión suavizadas y coeficientes de correlación con los niveles de significación (si no hay estrellas, la variable no es estadísticamente significativa, mientras que una, dos y tres estrellas significan que la correspondiente variable es estadísticamente significativa para los niveles 10%, 5% y 1%, respectivamente)
+
+chart.Correlation(datosNum, histogram = TRUE, method = "pearson")
+
+```
+```{r}
+
+
+
+
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+

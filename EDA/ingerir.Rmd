@@ -1,0 +1,256 @@
+---
+title: "ingerir"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+
+#Eliminación de las columnas columnas que tienen nulos, no tienen datos en este caso
+#pasajerosTotal, pasajerpEquivalente
+
+datosFinal <- datos
+
+datosFinal <- select(datosFinal, c(-9, -10))
+
+```
+
+```{r}
+#Eliminacioón de datos Nulos en filas
+
+datosFinal <- na.omit(datosFinal)
+
+#Comprobación de eliminación de datos Nulos
+sum(is.na(datosFinal))
+
+
+```
+```{r}
+#Datos atípicos de Pasajeros Regulares
+describe(datosFinal$Pasajeros.Regulares)
+
+ggplot(datosFinal, aes(x = Pasajeros.Regulares)) + 
+  geom_histogram(bins = 30, fill = "blue") + scale_x_continuous(labels = scales::comma) + labs(x="Regulares", y="Frecuencia") + scale_fill_brewer(palette = "Blues")
+
+
+datosFinalPrueba <- datosFinal
+
+
+#Podemos ver que el rango intercuatil está entre Q1 y Q3
+summary(datosFinal$Pasajeros.Regulares)
+
+#Rango Intercuartil
+IQR <- 22050 - 2229
+IQR
+
+Q1 <- 2229
+Q3 <- 22050
+
+#Valores atípicos umbral inferior y superior
+mayores <- Q1 + 1.5*IQR
+menores <- Q1 - 1.5*IQR
+
+mediana <- 21196
+
+
+#Reemplazamos valores atípicos por la mediana
+
+datosFinal$Pasajeros.Regulares [datosFinal$Pasajeros.Regulares > mayores] <- mediana
+
+hist(datosFinal$Pasajeros.Regulares)
+
+```
+```{r}
+#Datos atípicos de Pasajeros Adulto Mayor
+describe(datosFinal$Pasajeros.Adulto.Mayor)
+
+ggplot(datosFinal, aes(x = Pasajeros.Adulto.Mayor)) + 
+  geom_histogram(bins = 30, fill = "blue") + scale_x_continuous(labels = scales::comma) + labs(x="Adulto Mayor", y="Frecuencia") + scale_fill_brewer(palette = "Blues")
+
+
+#Podemos ver que el rango intercuatil está entre Q1 y Q3
+summary(datosFinal$Pasajeros.Adulto.Mayor)
+
+summary(datosFinalPrueba$Pasajeros.Adulto.Mayor)
+
+#Rango Intercuartil
+IQR_PAM <- 1749.8 - 154.8
+IQR_PAM
+
+Q1_PAM <- 154.8
+Q3_PAM <- 1749.8
+
+#Valores atípicos umbral inferior y superior
+
+#PAM = Pasajeros.Adulto.Mayor
+mayores_PAM <- Q1_PAM + 1.5*IQR_PAM
+menores_PAM <- Q1_PAM - 1.5*IQR_PAM
+
+mediana_PAM <- 1870.2
+
+#Reemplazamos valores atípicos por la mediana
+
+datosFinal$Pasajeros.Adulto.Mayor [datosFinal$Pasajeros.Adulto.Mayor > mayores_PAM] <- mediana_PAM
+
+hist(datosFinal$Pasajeros.Adulto.Mayor)
+
+
+```
+
+```{r}
+#Datos atípicos de Carreras
+
+describe(datosFinal$Carreras)
+
+ggplot(datosFinal, aes(x = Carreras)) + 
+  geom_histogram(bins = 30, fill = "blue") + scale_x_continuous(labels = scales::comma) + labs(x="Carreras", y="Frecuencia") + scale_fill_brewer(palette = "Blues")
+
+
+#Podemos ver que el rango intercuatil está entre Q1 y Q3
+summary(datosFinal$Carreras)
+
+#Rango Intercuartil C = Carreras
+IQR_C <- 589.8 - 62.0
+IQR_C
+
+Q1_C <- 62.0
+Q3_C <- 589.8
+
+#Valores atípicos umbral inferior y superior
+
+mayores_C <- Q1_C + 1.5*IQR_C
+menores_C <- Q1_C - 1.5*IQR_C
+
+mediana_C <- 572.8
+
+#Reemplazamos valores atípicos por la mediana
+
+datosFinal$Carreras [datosFinal$Carreras > mayores_C] <- mediana_C
+
+hist(datosFinal$Carreras, xlab = "Carreras")
+
+
+```
+
+```{r}
+#Datos atípicos de Ingresos
+
+describe(datosFinal$Ingresos)
+
+ggplot(datosFinal, aes(x = Ingresos)) + 
+  geom_histogram(bins = 30, fill = "blue") + scale_x_continuous(labels = scales::comma) + labs(x="Ingresos", y="Frecuencia") + scale_fill_brewer(palette = "Blues")
+
+
+#Podemos ver que el rango intercuatil está entre Q1 y Q3
+summary(datosFinal$Ingresos)
+
+#Rango Intercuartil I = Ingresos
+IQR_I <- 11153462 - 1314852
+IQR_I
+
+Q1_I <- 1314852
+Q3_I <- 11153462
+
+#Valores atípicos umbral inferior y superior
+
+mayores_I <- Q1_I + 1.5*IQR_I
+menores_I <- Q1_I - 1.5*IQR_I
+
+mediana_I <- 10504232
+
+#Reemplazamos valores atípicos por la mediana
+
+datosFinal$Ingresos [datosFinal$Ingresos > mayores_I] <- mediana_I
+
+hist(datosFinal$Ingresos, xlab = "Ingresos")
+
+ggplot(datosFinal, aes(x = Ingresos)) + 
+  geom_histogram(bins = 30, fill = "blue") + scale_x_continuous(labels = scales::comma) + labs(x="Ingresos", y="Frecuencia") + scale_fill_brewer(palette = "Blues")
+
+
+```
+
+```{r}
+#ACP de los datos
+#Escalar datos
+datosFinalACP$Pasajeros.Adulto.Mayor <- as.numeric(datosFinalACP$Pasajeros.Adulto.Mayor)
+datosFinalACP$Pasajeros.Regulares <- as.numeric(datosFinalACP$Pasajeros.Regulares)
+datosFinalACP$Ingresos <- as.numeric(datosFinalACP$Ingresos)
+
+datosFinalACP <- select(datosFinal, "Pasajeros.Adulto.Mayor", "Pasajeros.Regulares", "Carreras", "Ingresos")
+
+
+datosFinalACP <- scale(datosFinalACP) 
+
+#Gráfico de correlación
+
+datcor <- cor(datosFinalACP)
+
+corrplot(datosFinalACP, method = "circle")
+
+acp <- prcomp (datosFinalACP, center = TRUE, scale = TRUE)
+
+summary(acp)
+
+fviz_eig(acp)
+
+#Se guardan los dos primeros CP
+
+cp1 = acp[[2]][, 1]
+cp2 = acp[[2]][, 2]
+
+componentes <- cbind(cp1, cp2)
+
+#muestra la coordenada de los individuos en el plano x
+individuos <- acp$x[,1:3]
+
+
+#Generación de la gráfica de importancia de variables
+#Genera los gráficos fuera de la pantalla
+x11()
+#cp1 en el eje x y cp2 en el eje y
+s.corcircle(componentes[,-3], sub = "CP1 y CP2", possub = "topright")
+
+x11()
+s.label(individuos[,-3], label = row.names(datosFinalACP), sub="CP1 y CP2", possub = "topright")
+
+#Guardar los datos finales .feather
+
+write_feather(datosFinalACP, path = "Datos/datosFinalACP")
+
+
+write_feather(componentesDF, path = "Datos/componentes")
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

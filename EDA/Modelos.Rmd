@@ -1,0 +1,106 @@
+---
+title: "Modelos"
+output: html_document
+---
+
+```{r}
+#library(boot)
+
+t.id <- createDataPartition(datosFinalACP$Ingresos, p=0.7, list= F)
+
+View(t.id)
+
+#Se crea el modelo de regresión múltiple 
+
+regresion <- lm(data = datosFinalACP[t.id, ], Pasajeros.Regulares ~ Ingresos + Carreras)
+
+#Visualización de efectividad del modelo
+summary(regresion)
+
+#Nos dice las variables que son importantes para el modelo, si una variable contiene un "+" se debería eliminar esa variable
+step(regresion)
+
+
+#predict para el modelo
+
+predict(regresion, datosFinalACP[-t.id, -c(1)])
+
+datosPredict <- data.frame(Ingresos = 100000, Carreras = 500)
+
+prediccion <- predict(regresion, datosPredict)
+
+confint(regresion)
+
+
+
+
+```
+```{r}
+#modelo de probabilidad
+
+glm_mod <- glm(formula = Pasajeros.Regulares ~ ., data = datosFinalACP[t.id, ])
+
+#Visualización de efectividad del modelo
+summary(glm_mod)
+
+confint(glm_mod)
+
+```
+
+
+```{r}
+#Modelo arbol de desición de subtipo regresión
+
+modeloArbol <- rpart(formula = Pasajeros.Adulto.Mayor ~ Carreras + Ingresos, data = datosFinalACP[t.id, ])
+
+rpart.plot(modeloArbol)
+
+
+```
+```{r}
+#Predicción
+
+prediccionArbol <- predict(modeloArbol, newdata = datosFinalACP[-t.id, ])
+
+prediccionArbol
+
+training <- datosFinalACP[-t.id, ] %>%  mutate (resultado = prediccionArbol)
+
+training
+
+#Matriz de confusión
+confusionMatrix(training, datosFinalACP[-t.id, ])
+
+
+
+```
+```{r}
+
+#Curva ROC
+
+curvaRoc <- roc(datosFinalACP[t.id, "Pasajeros.Regulares"], glm_mod, auc = T, ci = T, levels = multiclass.roc())
+
+#Matriz de confusión
+
+confusion
+
+confint(regresion)
+
+#Efectividad de los modelos
+
+Accuracy(y_pred = prediccion, y_true = )
+
+tb <- table(datosFinalACP$Ingresos, prediccionArbol)
+
+
+```
+
+
+
+
+
+
+
+
+
+
